@@ -68,6 +68,7 @@ jobs:
   
   sonarqube-frontend-scan:
     runs-on: Agent-1
+    needs: trivy_fs_scan
     steps:
      - name: Checkout Code
        uses: actions/checkout@v4
@@ -86,6 +87,7 @@ jobs:
           
           
   sonarqube-backend-scan:
+    needs: sonarqube-frontend-scan
     runs-on: Agent-1
     steps:
      - name: Checkout Code
