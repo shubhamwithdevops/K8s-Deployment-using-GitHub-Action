@@ -33,7 +33,7 @@ jobs:
            find . -name "*.js" -exec node --check {} \;     
             
 
-  gitleaks:
+  gitleaks-scan:
     needs: compile
     runs-on: Agent-1
     steps:
@@ -47,3 +47,22 @@ jobs:
         run: |
           gitleaks detect --source ./client --exit-code 1
           gitleaks detect --source ./api --exit-code 1
+
+   
+          
+  trivy_fs_scan:
+    runs-on: Agent-1
+    needs: gitleaks-scan
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          scan_type: 'fs'
+          scan_ref: '.'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'        
